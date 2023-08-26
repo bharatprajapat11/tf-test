@@ -24,7 +24,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'my-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'UsernameandPassword', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         withEnv(["USERNAME=${USERNAME}", "PASSWORD=${PASSWORD}"]) {
                             sh 'terraform init'
                         }
@@ -36,7 +36,7 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'my-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'UsernameandPassword', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         withEnv(["USERNAME=${USERNAME}", "PASSWORD=${PASSWORD}"]) {
                             sh 'terraform apply -auto-approve'
                         }
@@ -50,7 +50,7 @@ pipeline {
         always {
             // Clean up resources or perform any necessary actions
             script {
-                withCredentials([usernamePassword(credentialsId: 'my-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'UsernameandPassword', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     withEnv(["USERNAME=${USERNAME}", "PASSWORD=${PASSWORD}"]) {
                         sh 'terraform destroy -auto-approve'
                     }
