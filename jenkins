@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout your version-controlled repository
+                checkout scm
+            }
+        }
+
+        stage('Read Credentials') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'UsernameandPassword', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        // The credentials are available as USERNAME and PASSWORD variables
+                        sh 'echo "Username: $USERNAME"'
+                        sh 'echo "Password: $PASSWORD"'
+                    }
+                }
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'my-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        withEnv(["USERNAME=${USERNAME}", "PASSWORD=${PASSWORD}"]) {
+                            sh 'terraform init'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'my-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        withEnv(["USERNAME=${USERNAME}", "PASSWORD=${PASSWORD}"]) {
+                            sh 'terraform apply -auto-approve'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Clean up resources or perform any necessary actions
+            script {
+                withCredentials([usernamePassword(credentialsId: 'my-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                    withEnv(["USERNAME=${USERNAME}", "PASSWORD=${PASSWORD}"]) {
+                        sh 'terraform destroy -auto-approve'
+                    }
+                }
+            }
+        }
+    }
+}
